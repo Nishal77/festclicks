@@ -1,11 +1,140 @@
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import logoImage from '../assets/logodash.png';
-import { MarqueeVerticalImages } from "../components/ui/MarqueeVerticalImages";
+import { cn } from "@/lib/utils";
+import { Marquee } from "@/components/magicui/marquee";
+
+// Define review data for the marquee
+const reviews = [
+  {
+    name: "Jack",
+    username: "@jack",
+    body: "I've never seen anything like this before. It's amazing. I love it.",
+    img: "https://avatar.vercel.sh/jack",
+  },
+  {
+    name: "Jill",
+    username: "@jill",
+    body: "I don't know what to say. I'm speechless. This is amazing.",
+    img: "https://avatar.vercel.sh/jill",
+  },
+  {
+    name: "John",
+    username: "@john",
+    body: "I'm at a loss for words. This is amazing. I love it.",
+    img: "https://avatar.vercel.sh/john",
+  },
+];
+
+const firstRow = reviews.slice(0, reviews.length / 2);
+const secondRow = reviews.slice(reviews.length / 2);
+
+const ReviewCard = ({
+  img,
+  name,
+  username,
+  body,
+}) => {
+  return (
+    <figure
+      className={cn(
+        "relative h-full w-36 cursor-pointer overflow-hidden rounded-xl border p-4",
+        // light styles
+        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
+        // dark styles
+        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
+      )}
+    >
+      <div className="flex flex-row items-center gap-2">
+        <img className="rounded-full" width="32" height="32" alt="" src={img} />
+        <div className="flex flex-col">
+          <figcaption className="text-sm font-medium dark:text-white">
+            {name}
+          </figcaption>
+          <p className="text-xs font-medium dark:text-white/40">{username}</p>
+        </div>
+      </div>
+      <blockquote className="mt-2 text-sm">{body}</blockquote>
+    </figure>
+  );
+};
+
+const MarqueeDemoVertical = () => {
+  return (
+    <div className="relative flex h-[500px] w-full flex-row items-center justify-center overflow-hidden">
+      <Marquee pauseOnHover vertical className="[--duration:20s]">
+        {firstRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+      <Marquee reverse pauseOnHover vertical className="[--duration:20s]">
+        {secondRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-background"></div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
+    </div>
+  );
+};
 
 export default function LandingPage() {
+  // Refs for marquee animation control
+  const leftMarqueeRef = useRef(null);
+  
+  // Control scrolling states
+  const [leftScrollActive, setLeftScrollActive] = useState(true);
+
+  // Event images for scrolling sections
+  const leftImages = [
+    "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1506157786151-b8491531f063?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  ];
+
+  // Handle scrolling animations using requestAnimationFrame for smoother performance
+  useEffect(() => {
+    const leftElement = leftMarqueeRef.current;
+    
+    if (!leftElement) return;
+    
+    let leftAnimationId;
+    let lastTimestamp = 0;
+    const scrollSpeed = 0.05; // pixels per millisecond
+    
+    // Left section scrolling (bottom to top)
+    const scrollLeft = (timestamp) => {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const elapsed = timestamp - lastTimestamp;
+      
+      if (leftScrollActive) {
+        leftElement.scrollTop -= scrollSpeed * elapsed; // Move upward
+        
+        // Reset scroll position when reaching the top for a seamless loop
+        if (leftElement.scrollTop <= 0) {
+          leftElement.scrollTop = leftElement.scrollHeight / 2;
+        }
+      }
+      
+      lastTimestamp = timestamp;
+      leftAnimationId = requestAnimationFrame(scrollLeft);
+    };
+    
+    leftAnimationId = requestAnimationFrame(scrollLeft);
+    
+    return () => {
+      if (leftAnimationId) cancelAnimationFrame(leftAnimationId);
+    };
+  }, [leftScrollActive]);
+
+  // Pause and resume scrolling functions
+  const handleLeftMouseEnter = () => setLeftScrollActive(false);
+  const handleLeftMouseLeave = () => setLeftScrollActive(true);
+
   return (
     <div className="dark min-h-screen bg-black text-white">
       {/* Navigation */}
@@ -61,18 +190,18 @@ export default function LandingPage() {
             {/* Headline */}
             <div className="space-y-4">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                Capture
-                <span className="relative ml-2">
-                  Every
+                Meet the{" "}
+                <span className="relative">
+                  Super-fast
                   <div className="absolute w-full h-1 bg-yellow-400 bottom-2 left-0 opacity-50"></div>
                 </span>
                 <br />
-                Festival
+               txt
                 <br />
-                <span className="text-gray-500">Moment</span>
+                <span className="text-gray-500">Platform</span>
               </h1>
               <p className="text-gray-400 text-lg md:text-xl max-w-xl">
-                Your all-in-one platform for managing, sharing, and preserving your most cherished event memories.
+               lemme add some text
               </p>
             </div>
 
@@ -88,14 +217,16 @@ export default function LandingPage() {
                   variant="outline"
                   className="border-white text-white hover:bg-gray-900 rounded-full px-8 py-6 text-lg"
                 >
-                  Book A Demo
+                  Upload Images
                 </Button>
               </Link>
             </div>
           </div>
 
-          {/* Replace old image grid with MarqueeVerticalImages component */}
-          <MarqueeVerticalImages />
+          {/* Replace right side components with Marquee */}
+          <div className="relative h-[640px] w-full max-w-[818px] mx-auto overflow-hidden">
+            <MarqueeDemoVertical />
+          </div>
         </div>
       </section>
 
@@ -159,6 +290,15 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Hide scrollbars for modern browsers */}
+      <style>
+        {`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}
+      </style>
     </div>
   )
 } 

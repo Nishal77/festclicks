@@ -48,56 +48,56 @@
   --card-foreground: oklch(0.294118 0 0);
   
   --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 0 0% 30%;
+  --input: oklch(0.953 0 0);
+  --input-invalid: oklch(0.961 0.175 29.7);
   
-  --primary: oklch(0.294118 0.2 275.75);
+  --primary: oklch(0.294118 0 0);
   --primary-foreground: oklch(1 0 0);
   
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.294118 0.2 275.75);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.294118 0 0);
   
-  --accent: oklch(0.96 0 0);
-  --accent-foreground: oklch(0.294118 0.2 275.75);
+  --accent: oklch(0.98 0 0);
+  --accent-foreground: oklch(0.294118 0 0);
   
-  --destructive: oklch(0.654902 0.279614 19.5);
+  --destructive: oklch(0.961 0.175 29.7);
   --destructive-foreground: oklch(1 0 0);
   
-  --ring: oklch(0.294118 0.2 275.75);
+  --ring: oklch(0.294118 0 0);
   
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: oklch(0.117647 0 0);
-  --foreground: oklch(0.972549 0 0);
+  /* Dark mode variables */
+  --background: oklch(0.294118 0 0);
+  --foreground: oklch(1 0 0);
   
-  --muted: oklch(0.2 0 0);
+  --muted: oklch(0.294118 0 0);
   --muted-foreground: oklch(0.8 0 0);
   
-  --popover: oklch(0.117647 0 0);
-  --popover-foreground: oklch(0.972549 0 0);
+  --popover: oklch(0.294118 0 0);
+  --popover-foreground: oklch(1 0 0);
   
-  --card: oklch(0.117647 0 0);
-  --card-foreground: oklch(0.972549 0 0);
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 0 0% 30%; 
- 
+  --card: oklch(0.294118 0 0);
+  --card-foreground: oklch(1 0 0);
   
-  --primary: oklch(0.294118 0.2 275.75);
-  --primary-foreground: oklch(0.972549 0 0);
+  --border: 0 0% 20%;
+  --input: oklch(0.294118 0 0);
   
-  --secondary: oklch(0.2 0 0);
-  --secondary-foreground: oklch(0.972549 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0.294118 0 0);
   
-  --accent: oklch(0.2 0 0);
-  --accent-foreground: oklch(0.972549 0 0);
+  --secondary: oklch(0.294118 0 0);
+  --secondary-foreground: oklch(1 0 0);
   
-  --destructive: oklch(0.654902 0.279614 19.5);
-  --destructive-foreground: oklch(0.972549 0 0);
+  --accent: oklch(0.1 0 0);
+  --accent-foreground: oklch(1 0 0);
   
-  --ring: oklch(0.294118 0.2 275.75);
+  --destructive: oklch(0 0 0);
+  --destructive-foreground: oklch(1 0 0);
+  
+  --ring: oklch(0.8 0 0);
 }
 
 * {
@@ -110,27 +110,26 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--background);
-  color: var(--foreground);
-  font-feature-settings: "rlig" 1, "calt" 1;
+  background-color: #000000;
+  color: #ffffff;
+  margin: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Animation keyframes for smooth transitions */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -156,35 +155,42 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .animate-marquee {
-  animation: marquee var(--duration, 30s) linear infinite;
+  animation: marquee var(--duration, 40s) linear infinite;
 }
 
 .animate-marquee-vertical {
-  animation: marquee-vertical var(--duration, 30s) linear infinite;
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
 }
 
-/* Custom loader animation */
 .loader {
-  width: 50px;
-  aspect-ratio: 1;
-  --_c: no-repeat radial-gradient(farthest-side, #ffffff 92%, #0000);
-  background: 
-    var(--_c) top,
-    var(--_c) left,
-    var(--_c) right,
-    var(--_c) bottom;
-  background-size: 12px 12px;
-  animation: l7 1s infinite;
+  width: 48px;
+  height: 48px;
+  margin: auto;
+  position: relative;
+}
+
+.loader:before {
+  content: '';
+  width: 48px;
+  height: 5px;
+  background: #000;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  border-radius: 50%;
+  animation: l7 1s linear infinite;
+  box-shadow: 0 0 10px #2563eb;
 }
 
 @keyframes l7 {
-  to { transform: rotate(.5turn) }
+  0%, 100% { transform: translateX(-25px) }
+  50% { transform: translateX(25px) }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 1s ease-in-out forwards;
 }
 
 .animate-slideUp {
-  animation: slideUp 0.6s ease-out forwards;
+  animation: slideUp 1s ease-in-out forwards;
 }

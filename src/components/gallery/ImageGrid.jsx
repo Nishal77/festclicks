@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { Marquee } from "@/components/magicui/marquee";
 
 const ImageGrid = ({ eventImages = [] }) => {
   const [images, setImages] = useState([]);
@@ -211,141 +209,100 @@ const ImageGrid = ({ eventImages = [] }) => {
     );
   };
 
-  // The reviews data for the marquee
-  const reviews = [
-    {
-      name: "Jack",
-      username: "@jack",
-      body: "I've never seen anything like this before. It's amazing. I love it.",
-      img: "https://avatar.vercel.sh/jack",
-    },
-    {
-      name: "Jill",
-      username: "@jill",
-      body: "I don't know what to say. I'm speechless. This is amazing.",
-      img: "https://avatar.vercel.sh/jill",
-    },
-    {
-      name: "John",
-      username: "@john",
-      body: "I'm at a loss for words. This is amazing. I love it.",
-      img: "https://avatar.vercel.sh/john",
-    },
-  ];
-
-  const firstRow = reviews.slice(0, reviews.length / 2);
-  const secondRow = reviews.slice(reviews.length / 2);
-
-  const ReviewCard = ({
-    img,
-    name,
-    username,
-    body,
-  }) => {
-    return (
-      <figure
-        className={cn(
-          "relative h-full w-36 cursor-pointer overflow-hidden rounded-xl border p-4",
-          // light styles
-          "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-          // dark styles
-          "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
-        )}
-      >
-        <div className="flex flex-row items-center gap-2">
-          <img className="rounded-full" width="32" height="32" alt="" src={img} />
-          <div className="flex flex-col">
-            <figcaption className="text-sm font-medium dark:text-white">
-              {name}
-            </figcaption>
-            <p className="text-xs font-medium dark:text-white/40">{username}</p>
-          </div>
-        </div>
-        <blockquote className="mt-2 text-sm">{body}</blockquote>
-      </figure>
-    );
-  };
-
-  const MarqueeDemoVertical = () => {
-    return (
-      <div className="relative flex h-[500px] w-full flex-row items-center justify-center overflow-hidden">
-        <Marquee pauseOnHover vertical className="[--duration:20s]">
-          {firstRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
-        <Marquee reverse pauseOnHover vertical className="[--duration:20s]">
-          {secondRow.map((review) => (
-            <ReviewCard key={review.username} {...review} />
-          ))}
-        </Marquee>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-background"></div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
-      </div>
-    );
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Original Image Grid Code */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {images.map((image, index) => (
-          <motion.div 
-            key={image.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="relative group rounded-lg overflow-hidden bg-gray-900 h-64 flex items-center justify-center"
-          >
-            {loadingImages[image.id] && (
-              <Skeleton className="absolute inset-0 bg-gray-800/40" />
-            )}
-            <img
-              src={image.src}
-              alt={image.alt}
-              className={`w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 ${
-                loadingImages[image.id] ? 'opacity-0' : 'opacity-100'
-              }`}
-              onLoad={() => {
-                setLoadingImages(prev => ({ ...prev, [image.id]: false }));
-              }}
-            />
-            
-            <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-              <div className="flex justify-end">
-                <button 
-                  className="bg-white rounded-full p-2 text-gray-800 hover:bg-gray-200 transition-colors duration-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(image.src, '_blank');
-                  }}
-                >
-                  <Download size={18} />
-                </button>
-              </div>
-              <div className="text-white text-xs text-right">
-                Request image removal: @contactadmin
-              </div>
-            </div>
-          </motion.div>
-        ))}
+    <div className="container mx-auto">
+      {/* Custom CSS for masonry layout - matches the reference exactly */}
+      <style>
+        {`
+          .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 4px;
+          }
+          
+          .column {
+            flex: 25%;
+            max-width: 25%;
+            padding: 0 4px;
+          }
+          
+          .column img {
+            margin-top: 8px;
+            vertical-align: middle;
+            width: 100%;
+            transition: all 0.3s ease;
+          }
+          
+          .column img:hover {
+            transform: scale(1.02);
+          }
+          
+          .image-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+          }
+          
+          .download-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            padding: 8px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border: 1px solid hsl(var(--border));
+          }
+          
+          .image-container:hover .download-icon {
+            opacity: 1;
+          }
+          
+          @media (max-width: 1200px) {
+            .column {
+              flex: 50%;
+              max-width: 50%;
+            }
+          }
+          
+          @media (max-width: 600px) {
+            .column {
+              flex: 100%;
+              max-width: 100%;
+            }
+          }
+        `}
+      </style>
+
+      <div className="grid-container">
+        {/* First Column */}
+        <div className="column">
+          {largeColumns[0].map((image) => renderImageOrSkeleton(image, 0))}
+        </div>
+        
+        {/* Second Column */}
+        <div className="column">
+          {largeColumns[1].map((image) => renderImageOrSkeleton(image, 1))}
+        </div>
+        
+        {/* Third Column */}
+        <div className="column">
+          {largeColumns[2].map((image) => renderImageOrSkeleton(image, 2))}
+        </div>
+        
+        {/* Fourth Column */}
+        <div className="column">
+          {largeColumns[3].map((image) => renderImageOrSkeleton(image, 3))}
+        </div>
       </div>
-      
-      {/* Loader indicator */}
-      <div ref={loaderRef} className="h-20 flex items-center justify-center mt-8">
+
+      {/* Bottom loader for infinite scrolling - only visible when scrolling and loading more */}
+      <div ref={loaderRef} className="w-full h-16 flex items-center justify-center py-4">
         {loadingMore && (
-          <div className="flex space-x-2 animate-pulse">
-            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-          </div>
+          <div className="loader"></div>
         )}
-      </div>
-      
-      {/* Vertical Marquee Demo */}
-      <div className="mt-12 mb-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Reviews Marquee</h2>
-        <MarqueeDemoVertical />
       </div>
     </div>
   );
