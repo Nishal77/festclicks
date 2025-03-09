@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Import custom fonts */
+@font-face {
+  font-family: 'Nunito';
+  src: url('./assets/fonts/Nunito-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('./assets/fonts/BebasNeue-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Panchang';
+  src: url('./assets/fonts/OTF/Panchang-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Font family variables */
+  --font-sans: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Bebas Neue', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Panchang', 'Bebas Neue', system-ui, sans-serif;
+  
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.294118 0 0);
+  
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.64 0 0);
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.294118 0 0);
+  
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.294118 0 0);
+  
+  --input: oklch(0.89 0 0);
+  
+  --primary: oklch(0.294118 0.2 275.75);
+  --primary-foreground: oklch(1 0 0);
+  
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.294118 0.2 275.75);
+  
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.294118 0.2 275.75);
+  
+  --destructive: oklch(0.654902 0.279614 19.5);
+  --destructive-foreground: oklch(1 0 0);
+  
+  --ring: oklch(0.294118 0.2 275.75);
+  
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.117647 0 0);
+  --foreground: oklch(0.972549 0 0);
+  
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.8 0 0);
+  
+  --popover: oklch(0.117647 0 0);
+  --popover-foreground: oklch(0.972549 0 0);
+  
+  --card: oklch(0.117647 0 0);
+  --card-foreground: oklch(0.972549 0 0);
+  
+  --border: oklch(0.317647 0 0);
+  --input: oklch(0.317647 0 0);
+  
+  --primary: oklch(0.294118 0.2 275.75);
+  --primary-foreground: oklch(0.972549 0 0);
+  
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.972549 0 0);
+  
+  --accent: oklch(0.2 0 0);
+  --accent-foreground: oklch(0.972549 0 0);
+  
+  --destructive: oklch(0.654902 0.279614 19.5);
+  --destructive-foreground: oklch(0.972549 0 0);
+  
+  --ring: oklch(0.294118 0.2 275.75);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
