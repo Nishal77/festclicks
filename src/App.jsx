@@ -9,6 +9,7 @@ import Gallery from './pages/user/Gallery';
 import NotFound from './pages/user/NotFound';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageEvents from './pages/admin/ManageEvents';
+import EventGallery from './pages/gallery/EventGallery';
 import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 import Toast from './components/ui/Toast';
@@ -52,6 +53,18 @@ function App() {
               <Layout>
                 <PrivateRoute>
                   <Gallery />
+                </PrivateRoute>
+              </Layout>
+            } 
+          />
+          
+          {/* Event Gallery routes */}
+          <Route 
+            path="/:eventSlug/gallery" 
+            element={
+              <Layout showNavbar={false}>
+                <PrivateRoute>
+                  <EventGallery />
                 </PrivateRoute>
               </Layout>
             } 

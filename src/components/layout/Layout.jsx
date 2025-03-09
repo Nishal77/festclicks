@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from './Navbar';
-import Footer from './Footer';
 
 const Layout = () => {
   const { user } = useAuth();
@@ -20,9 +19,6 @@ const Layout = () => {
       <main className="flex-grow">
         <Outlet />
       </main>
-      
-      {/* Only show Footer if user is logged in and not on public pages */}
-      {user && !isPublicPage && <Footer />}
     </div>
   );
 };

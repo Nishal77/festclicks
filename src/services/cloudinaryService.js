@@ -1,5 +1,8 @@
 // Cloudinary service for handling media uploads
+import cld from '@/lib/cloudinaryConfig';
+import { fill } from '@cloudinary/url-gen/actions/resize';
 
+// Access environment variables
 const CLOUDINARY_CLOUD_NAME = import.meta.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.CLOUDINARY_UPLOAD_PRESET;
 const CLOUDINARY_API_KEY = import.meta.env.CLOUDINARY_API_KEY;
@@ -19,11 +22,19 @@ export const uploadToCloudinary = async (file, folder, resourceType = 'auto') =>
     throw new Error('No file provided for upload');
   }
 
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    throw new Error('Cloudinary configuration is missing. Please check your environment variables.');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
   formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
-  formData.append('api_key', CLOUDINARY_API_KEY);
+  
+  // Only add API key if we're using signed uploads
+  if (CLOUDINARY_API_KEY) {
+    formData.append('api_key', CLOUDINARY_API_KEY);
+  }
   
   if (folder) {
     formData.append('folder', folder);
@@ -36,8 +47,13 @@ export const uploadToCloudinary = async (file, folder, resourceType = 'auto') =>
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Cloudinary upload failed: ${errorData.error?.message || 'Unknown error'}`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        throw new Error(`Cloudinary upload failed with status: ${response.status}`);
+      }
+      throw new Error(`Cloudinary upload failed: ${errorData.error?.message || errorData.error || 'Unknown error'}`);
     }
 
     const data = await response.json();
@@ -83,7 +99,7 @@ export const uploadMultipleToCloudinary = async (files, folder) => {
 };
 
 /**
- * Generate a Cloudinary URL with transformations
+ * Generate a Cloudinary URL with transformations using the URL-gen SDK
  * @param {string} publicId - The public ID of the resource
  * @param {Object} options - Transformation options
  * @returns {string} - The transformed URL
@@ -99,13 +115,17 @@ export const getTransformedUrl = (publicId, options = {}) => {
     format = 'auto',
   } = options;
   
-  let transformations = 'f_auto,q_auto';
+  // Create a new image with the public ID
+  const image = cld.image(publicId);
   
-  if (width) transformations += `,w_${width}`;
-  if (height) transformations += `,h_${height}`;
-  if (crop) transformations += `,c_${crop}`;
+  // Add transformations
+  if (width && height) {
+    image.resize(fill().width(width).height(height));
+  }
   
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
+  // Format and quality are automatically handled by the SDK
+  
+  return image.toURL();
 };
 
 /**
@@ -117,18 +137,19 @@ export const getTransformedUrl = (publicId, options = {}) => {
 export const getTransformedVideoUrl = (publicId, options = {}) => {
   if (!publicId) return '';
   
+  // Use the cloudinary SDK for videos too
+  const video = cld.video(publicId);
+  
   const {
     width,
     height,
     crop = 'fill',
-    quality = 'auto',
   } = options;
   
-  let transformations = 'q_auto';
+  // Add transformations
+  if (width && height) {
+    video.resize(fill().width(width).height(height));
+  }
   
-  if (width) transformations += `,w_${width}`;
-  if (height) transformations += `,h_${height}`;
-  if (crop) transformations += `,c_${crop}`;
-  
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/${transformations}/${publicId}`;
+  return video.toURL();
 }; 

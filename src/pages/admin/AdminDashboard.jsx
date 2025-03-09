@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchEvents } from '../../services/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
+import Footer from '../../components/layout/Footer';
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
@@ -293,6 +294,9 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+      
+      {/* Page-specific Footer */}
+      <Footer />
     </div>
   );
 };

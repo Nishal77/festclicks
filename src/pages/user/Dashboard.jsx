@@ -5,6 +5,12 @@ import { useAuth } from '../../context/AuthContext';
 import EventCard from '../../components/events/EventCard';
 import { Button } from '../../components/ui/button';
 import coverVideo from '../../assets/covervideo.mp4';
+import React from 'react';
+// Import the images for mock events
+import sentia1Image from '../../assets/sentia1.jpeg';
+import onamImage from '../../assets/onam.jpeg';
+// Import Footer component
+import Footer from '../../components/layout/Footer';
 
 // Add Satoshi font imports and styles
 const Dashboard = () => {
@@ -74,17 +80,17 @@ const Dashboard = () => {
   const mockEvents = [
     {
       id: 'mock-1',
-      title: 'Sentia: The Ultimate Fest Experience!',
-      description: 'Experience the thrill of Sentia, where competitions, concerts, and celebrity performances bring the fest to life! Get ready for non-stop entertainment, innovation, and unforgettable memories!',
-      date: new Date('2024-07-15'),
-      image: '/src/assets/sentia1.jpeg'
+      title: 'Sentia: Official Freshers Party',
+      description: 'Join us for the official freshers party to welcome new students and celebrate the beginning of a new academic year!',
+      date: new Date('2023-12-15'),
+      image: sentia1Image
     },
     {
       id: 'mock-2',
       title: 'Onam: A Festival of Joy & Tradition! ',
       description: 'Celebrate Onam, the vibrant festival of Kerala, filled with grand feasts, cultural performances, and the spirit of togetherness!',
       date: new Date('2023-11-12'),
-      image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=800&q=80'
+      image: onamImage
     },
     {
       id: 'mock-3',
@@ -107,7 +113,7 @@ const Dashboard = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white pt-16 font-sans"> 
+    <main className="min-h-screen bg-black text-white font-sans"> 
       {/* Hero section with cover video */}
       <section className="relative h-[450px] md:h-[550px] overflow-hidden">
         {/* Background Video */}
@@ -177,9 +183,9 @@ const Dashboard = () => {
 
       {/* Events section with improved heading */}
       <section className="container mx-auto px-4 py-16">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-white font-heading" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-white font-heading" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
               FEATURED EXPERIENCES
             </h2>
             <p className="text-gray-400 mt-2 font-sans" style={{ fontFamily: 'Nunito, sans-serif' }}>Discover and join upcoming events</p>
@@ -207,7 +213,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {displayEvents.map((event) => (
             <EventCard
               key={event.id}
@@ -217,7 +223,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      
+      {/* Page-specific Footer */}
     </main>
   );
 };

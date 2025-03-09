@@ -1,8 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { X, Upload, FileImage, Video, File, Check, AlertCircle, Info } from 'lucide-react';
 import { Button } from './button';
+import { uploadToCloudinary, uploadMultipleToCloudinary } from '@/services/cloudinaryService';
+import { saveMediaRecord } from '@/services/supabaseClient';
+import cld from '@/lib/cloudinaryConfig';
 
-const UploadModal = ({ isOpen, onClose }) => {
+const UploadModal = ({ isOpen, onClose, eventId = 'general' }) => {
   const [files, setFiles] = useState([]);
   const [category, setCategory] = useState('');
   const [mediaType, setMediaType] = useState('');
@@ -11,20 +14,13 @@ const UploadModal = ({ isOpen, onClose }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const fileInputRef = useRef(null);
 
-  // Categories for the dropdown
+  // Categories for the dropdown - Modified to only include Sentia and Onam
   const categories = [
-    'Singing',
-    'Dancing',
-    'Photography',
-    'Art',
-    'Sports',
-    'Fashion',
-    'Technology',
-    'Cultural',
-    'Academic',
-    'Other'
+    'Sentia',
+    'Onam'
   ];
 
   // Media types for the radio buttons
@@ -122,8 +118,8 @@ const UploadModal = ({ isOpen, onClose }) => {
     setFiles([]);
   };
 
-  // Mock upload function
-  const handleUpload = () => {
+  // Handle upload to Cloudinary
+  const handleUpload = async () => {
     // Validate inputs
     if (!category) {
       setError('Please select a category. This field is required.');
@@ -158,29 +154,93 @@ const UploadModal = ({ isOpen, onClose }) => {
     // Clear previous errors
     setError('');
     setUploading(true);
-    
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 5;
-      setUploadProgress(progress);
+    setUploadedFiles([]);
+    setUploadProgress(5); // Show initial progress
+
+    try {
+      // Define the folder structure in Cloudinary - Include category in the path
+      const folder = `festclicks/${eventId}/${category}/${mediaType}`;
       
-      if (progress >= 100) {
-        clearInterval(interval);
-        setUploading(false);
-        setSuccess(true);
-        
-        // Reset after showing success message
-        setTimeout(() => {
-          setFiles([]);
-          setCategory('');
-          setMediaType('');
-          setUploadProgress(0);
-          setSuccess(false);
-          onClose();
-        }, 2000);
+      // Upload files in batches to show progress
+      const totalFiles = files.length;
+      let processed = 0;
+      const results = [];
+      
+      // Process files in batches of 5 for better progress tracking
+      const batchSize = Math.min(5, totalFiles);
+      const batches = [];
+      
+      for (let i = 0; i < totalFiles; i += batchSize) {
+        batches.push(files.slice(i, i + batchSize));
       }
-    }, 100);
+      
+      // Process each batch sequentially
+      for (const batch of batches) {
+        const batchResults = await uploadMultipleToCloudinary(batch, folder);
+        results.push(...batchResults);
+        
+        processed += batch.length;
+        const progressPercentage = Math.floor((processed / totalFiles) * 90) + 5;
+        setUploadProgress(progressPercentage);
+        
+        // Add to uploaded files list
+        const newUploadedFiles = batchResults.map(result => ({
+          url: result.url,
+          publicId: result.publicId,
+          format: result.format,
+          resourceType: result.resourceType
+        }));
+        
+        setUploadedFiles(prev => [...prev, ...newUploadedFiles]);
+      }
+      
+      // Save media records to database
+      try {
+        await Promise.all(
+          results.map(async (file) => {
+            const mediaData = {
+              event_id: eventId,
+              url: file.url,
+              public_id: file.publicId,
+              resource_type: file.resourceType,
+              format: file.format,
+              width: file.width,
+              height: file.height,
+              bytes: file.bytes,
+              category: category, // Save the category
+              media_type: mediaType,
+              duration: file.duration || null,
+            };
+            
+            return await saveMediaRecord(mediaData);
+          })
+        );
+      } catch (dbError) {
+        console.warn("Files were uploaded to Cloudinary but there was an error saving to database:", dbError);
+        // We don't fail the whole process if just the DB save fails
+      }
+      
+      // All uploads complete
+      setUploadProgress(100);
+      setUploading(false);
+      setSuccess(true);
+      
+      // Reset after showing success message
+      setTimeout(() => {
+        setFiles([]);
+        setCategory('');
+        setMediaType('');
+        setUploadProgress(0);
+        setSuccess(false);
+        setUploadedFiles([]);
+        onClose();
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setError(`Upload failed: ${error.message}`);
+      setUploading(false);
+    }
   };
 
   // If not open, don't render

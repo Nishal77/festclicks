@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { uploadMultipleToCloudinary } from '../../services/cloudinaryService';
-import { saveMediaRecord } from '../../services/supabaseClient';
+import { uploadMultipleToCloudinary } from '@/services/cloudinaryService';
+import { saveMediaRecord } from '@/services/supabaseClient';
 
 const Upload = ({ eventId, onUploadComplete }) => {
   const [files, setFiles] = useState([]);
