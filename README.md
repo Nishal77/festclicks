@@ -49,12 +49,15 @@ Add the following environment variables to your `.env` file:
 ```
 SUPABASE_URL=your_supabase_url_here
 SUPABASE_ANON_KEY=your_supabase_anon_key_here
-DATABASE_URL=your_database_url_here
-AUTH_SECRET=your_auth_secret_here
-STORAGE_URL=your_storage_url_here
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
 ```
 
-> **Note:** You need to replace the placeholder values with your actual API keys and URLs. Create an account with the relevant services to obtain these keys.
+> **Note:** You need to replace the placeholder values with your actual API keys and URLs. Create accounts with Supabase and Cloudinary to obtain these keys.
 
 ### 3. Install dependencies
 

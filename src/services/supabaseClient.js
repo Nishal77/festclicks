@@ -1,10 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Use direct values as provided in the example
-const supabaseUrl = 'https://xydcmpycampryrvszwxy.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5ZGNtcHljYW1wcnlydnN6d3h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMjk1MzAsImV4cCI6MjA1NjgwNTUzMH0.ZQBzP7qedMM47K2jFmmXg_AAtwM2opA2CU-pvUtXRYk';
+// Use environment variables
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
 
-console.log('Initializing Supabase client with:', { supabaseUrl, supabaseAnonKey: supabaseAnonKey.substring(0, 10) + '...' });
+// Add a safety check for logging
+console.log('Initializing Supabase client with:', { 
+  supabaseUrl, 
+  supabaseAnonKey: supabaseAnonKey ? supabaseAnonKey.substring(0, 10) + '...' : 'undefined'
+});
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
